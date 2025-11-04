@@ -1,0 +1,254 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Sharplead — Player Wallet</title>
+  <link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body>
+  <div class="topbar" id="brand" title="Go to Wallet">
+    <div class="logo">SL</div>
+    <div class="appname">Sharplead Wallet</div>
+    <div style="margin-left:auto" class="pill">PH · PROD</div>
+  </div>
+
+  <div class="container">
+
+    <!-- WALLET -->
+    <section class="view" id="wallet">
+      <div class="card">
+        <div class="kpi">
+          <div>
+            <div class="small" style="color:#b9c6e8">Wallet Balance</div>
+            <div id="walletBalance" class="big" data-amount="12450">₱12,450.00</div>
+          </div>
+          <div class="row">
+            <button type="button" class="btn" onclick="openSheet('sheetTopup')">Top‑up</button>
+            <button type="button" class="btn ghost" onclick="openSheet('sheetWithdraw')">Withdraw</button>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="card">
+            <h3>Quick Top‑up</h3>
+            <div class="row">
+              <button type="button" class="btn" data-topup="200">₱200</button>
+              <button type="button" class="btn" data-topup="500">₱500</button>
+              <button type="button" class="btn" data-topup="1000">₱1,000</button>
+              <button type="button" class="btn" data-topup="5000">₱5,000</button>
+            </div>
+            <div class="row" style="margin-top:8px">
+              <input id="customTopup" class="input" placeholder="Custom amount e.g. 1500"/>
+              <button id="customAdd" type="button" class="btn">Add</button>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Recent Transactions</h3>
+            <div id="txList">
+              <div class="tile"><div class="left"><div class="icon">₱</div><div>Deposit · GCash</div></div><div class="amount plus">+ ₱1,200.00</div></div>
+              <div class="tile"><div class="left"><div class="icon">🎮</div><div>Dragon Slots</div></div><div class="amount minus">− ₱600.00</div></div>
+              <div class="tile"><div class="left"><div class="icon">🎮</div><div>Baccarat</div></div><div class="amount minus">− ₱300.00</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAY -->
+    <section class="view" id="pay" style="display:none">
+      <div class="card">
+        <h3>Choose Payment Method</h3>
+        <div class="tile" data-method="GCash">
+          <div class="left"><div class="icon"><span class="badge gcash"></span></div><div>GCash (QR)</div></div>
+          <div class="pill">Recommended</div>
+        </div>
+        <div class="tile" data-method="Maya">
+          <div class="left"><div class="icon"><span class="badge maya"></span></div><div>Maya (QR)</div></div>
+          <div></div>
+        </div>
+        <div class="tile" data-method="Card">
+          <div class="left"><div class="icon"><span class="badge card"></span></div><div>Credit/Debit Card</div></div>
+          <div class="pill">3DS</div>
+        </div>
+        <div class="tile" data-method="Bank">
+          <div class="left"><div class="icon"><span class="badge bank"></span></div><div>Bank Transfer</div></div>
+          <div></div>
+        </div>
+        <div class="card">
+          <h3>Pay Amount</h3>
+          <div class="row">
+            <input class="input" value="500" />
+            <button type="button" id="payBtn" class="btn block">Pay via <span id="selectedMethod">GCash</span></button>
+          </div>
+          <div class="small" style="margin-top:8px;color:#b9c6e8">You’ll be redirected to the provider or shown a QR code.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section class="view" id="profile" style="display:none">
+      <div class="card">
+        <div class="kpi">
+          <div class="left">
+            <div class="icon" style="background:#2b3757">👤</div>
+            <div>
+              <div><strong>Joe Player</strong></div>
+              <div class="small" style="color:#b9c6e8">ID: 0x92af…c1</div>
+            </div>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="card">
+            <h3>Account</h3>
+            <div class="row"><input class="input" value="joe@example.com"/><button type="button" class="btn">Save</button></div>
+            <div class="row" style="margin-top:8px"><input class="input" placeholder="New password"/><button type="button" class="btn ghost">Change</button></div>
+          </div>
+          <div class="card">
+            <h3>Linked Payment Methods</h3>
+            <div class="method-list" id="methodList">
+              <div class="tile">
+                <div class="left">
+                  <div class="icon">🔵</div>
+                  <div>
+                    <div>GCash • 09•• ••• ••12</div>
+                    <div class="method-meta">Verified • Default</div>
+                  </div>
+                </div>
+                <div class="method-actions">
+                  <button type="button" class="btn small" onclick="toast('Set as default')">Set Default</button>
+                  <button type="button" class="btn ghost small" onclick="toast('Remove GCash (demo)')">Remove</button>
+                </div>
+              </div>
+              <div class="tile">
+                <div class="left">
+                  <div class="icon">🟣</div>
+                  <div>
+                    <div>Maya • 09•• ••• ••34</div>
+                    <div class="method-meta">Verified</div>
+                  </div>
+                </div>
+                <div class="method-actions">
+                  <button type="button" class="btn small" onclick="toast('Set as default')">Set Default</button>
+                  <button type="button" class="btn ghost small" onclick="toast('Remove Maya (demo)')">Remove</button>
+                </div>
+              </div>
+              <div class="tile">
+                <div class="left">
+                  <div class="icon">💳</div>
+                  <div>
+                    <div>Visa •••• 4242</div>
+                    <div class="method-meta">3DS • Verified</div>
+                  </div>
+                </div>
+                <div class="method-actions">
+                  <button type="button" class="btn small" onclick="toast('Set as default')">Set Default</button>
+                  <button type="button" class="btn ghost small" onclick="toast('Remove Card (demo)')">Remove</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="label" style="margin-top:6px">Add New Method</div>
+            <div class="row">
+              <button type="button" class="btn small" onclick="openSheet('sheetAddGCash')">Add GCash</button>
+              <button type="button" class="btn small" onclick="openSheet('sheetAddMaya')">Add Maya</button>
+              <button type="button" class="btn small" onclick="openSheet('sheetAddCard')">Add Card</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HELP -->
+    <section class="view" id="help" style="display:none">
+      <div class="card">
+        <h3>Support</h3>
+        <p class="small">For payment issues, contact support@yourapp.com or open a ticket.</p>
+        <button type="button" class="btn" onclick="toast('Ticket created (demo)')">Create Ticket</button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Bottom Nav -->
+  <nav class="navbar">
+    <div class="navbtn active" data-view="wallet">💰<div class="small">Wallet</div></div>
+    <div class="navbtn" data-view="pay">📲<div class="small">Pay</div></div>
+    <div class="navbtn" data-view="profile">👤<div class="small">Profile</div></div>
+    <div class="navbtn" data-view="help">❓<div class="small">Help</div></div>
+  </nav>
+
+  <!-- Sheets -->
+  <div id="sheetTopup" class="sheet">
+    <div class="handle"></div>
+    <h3>Top‑up</h3>
+    <div class="row form-grid">
+      <input class="input" placeholder="Amount e.g. 500"/>
+      <select class="input">
+        <option>Method: GCash (Default)</option><option>Maya</option><option>Card</option>
+      </select>
+      <input class="input" placeholder="Reference (optional)"/>
+      <button type="button" class="btn block">Continue</button>
+      <button type="button" class="btn ghost block" onclick="closeSheet('sheetTopup')">Cancel</button>
+    </div>
+  </div>
+
+  <div id="sheetWithdraw" class="sheet">
+    <div class="handle"></div>
+    <h3>Withdraw</h3>
+    <div class="row form-grid">
+      <input id="withdrawAmt" class="input" placeholder="Amount e.g. 500"/>
+      <input class="input" placeholder="Destination (e.g., bank acct)"/>
+      <input class="input" placeholder="Notes (optional)"/>
+      <button id="withdrawRequest" type="button" class="btn block">Request</button>
+      <button type="button" class="btn ghost block" onclick="closeSheet('sheetWithdraw')">Cancel</button>
+    </div>
+  </div>
+
+  <div id="sheetSuccess" class="sheet">
+    <div class="handle"></div>
+    <h3>Payment Successful</h3>
+    <p class="small">We’ll post this in your transactions shortly.</p>
+    <button type="button" class="btn block" onclick="closeSheet('sheetSuccess')">Done</button>
+  </div>
+
+  <!-- Add Methods Sheets -->
+  <div id="sheetAddGCash" class="sheet">
+    <div class="handle"></div>
+    <h3>Add GCash</h3>
+    <div class="row form-grid">
+      <input class="input" placeholder="GCash number (09xx)"/>
+      <input class="input" placeholder="Account name"/>
+      <button type="button" class="btn block" onclick="addMethod('gcash'); closeSheet('sheetAddGCash')">Save</button>
+      <button type="button" class="btn ghost block" onclick="closeSheet('sheetAddGCash')">Cancel</button>
+    </div>
+  </div>
+  <div id="sheetAddMaya" class="sheet">
+    <div class="handle"></div>
+    <h3>Add Maya</h3>
+    <div class="row form-grid">
+      <input class="input" placeholder="Maya number (09xx)"/>
+      <input class="input" placeholder="Account name"/>
+      <button type="button" class="btn block" onclick="addMethod('maya'); closeSheet('sheetAddMaya')">Save</button>
+      <button type="button" class="btn ghost block" onclick="closeSheet('sheetAddMaya')">Cancel</button>
+    </div>
+  </div>
+  <div id="sheetAddCard" class="sheet">
+    <div class="handle"></div>
+    <h3>Add Card</h3>
+    <div class="row form-grid">
+      <input class="input" placeholder="Card number"/>
+      <input class="input" placeholder="Name on card"/>
+      <input class="input" placeholder="Expiry (MM/YY)"/>
+      <input class="input" placeholder="CVC"/>
+      <button type="button" class="btn block" onclick="addMethod('card'); closeSheet('sheetAddCard')">Save</button>
+      <button type="button" class="btn ghost block" onclick="closeSheet('sheetAddCard')">Cancel</button>
+    </div>
+    <div class="small" style="color:#b9c6e8;margin-top:8px">Your card details are tokenized and never stored directly.</div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>

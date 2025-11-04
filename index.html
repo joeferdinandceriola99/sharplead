@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sharplead — Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="assets/data.js"></script>
+  <script src="assets/common.js"></script>
+</head>
+<body>
+<script>renderHeader('dashboard')</script>
+<div class="container-fluid py-3">
+<div class="row g-3">
+  <div class="col-12 col-lg-3"><div class="card h-100"><div class="card-body"><div class="text-secondary small">GGR Today</div><div id="kpi-ggr" class="display-6 fw-bold">—</div><div id="kpi-ggr-sub" class="text-secondary small">…</div></div></div></div>
+  <div class="col-12 col-lg-3"><div class="card h-100"><div class="card-body"><div class="text-secondary small">NGR Today</div><div id="kpi-ngr" class="display-6 fw-bold">—</div><div class="text-secondary small">after fees & promos</div></div></div></div>
+  <div class="col-12 col-lg-3"><div class="card h-100"><div class="card-body"><div class="text-secondary small">Active Users (24h)</div><div id="kpi-ap" class="display-6 fw-bold">—</div><div class="text-secondary small">ARPPU <span id="kpi-arppu">—</span></div></div></div></div>
+  <div class="col-12 col-lg-3"><div class="card h-100"><div class="card-body"><div class="text-secondary small">Success Rate</div><div id="kpi-sr" class="display-6 fw-bold">—</div><canvas id="chart-sr" height="48"></canvas></div></div></div>
+</div>
+<div class="row g-3 mt-1">
+  <div class="col-12 col-lg-6"><div class="card"><div class="card-header d-flex justify-content-between align-items-center"><span>Revenue Trend (Real‑time)</span>
+  <div class="d-flex gap-2"><select id="trendRange" class="form-select form-select-sm"><option>Day</option><option>Month</option><option>Year</option></select></div></div>
+  <div class="card-body"><canvas id="trend" height="220"></canvas><div class="text-secondary small mt-2">Demo stream + optional BTC ticker.</div></div></div></div>
+  <div class="col-12 col-lg-6"><div class="card"><div class="card-header">Payment Methods</div>
+  <div class="card-body d-flex gap-4 align-items-center"><canvas id="donut" width="200" height="200"></canvas>
+  <ul class="list-unstyled mb-0 text-secondary"><li><span class="legend-dot bg-info"></span> GCash</li><li><span class="legend-dot bg-primary"></span> Maya</li><li><span class="legend-dot bg-success"></span> Cards</li><li><span class="legend-dot bg-warning"></span> Bank</li></ul></div></div></div>
+</div>
+<div class="row g-3 mt-1">
+  <div class="col-12 col-lg-6"><div class="card"><div class="card-header d-flex justify-content-between align-items-center"><span>Live Activity</span><button id="replay" class="btn btn-outline-secondary btn-sm">Replay Failed Webhooks</button></div>
+  <div id="activity" class="list-group list-group-flush" style="max-height:260px;overflow:auto"></div></div></div>
+  <div class="col-12 col-lg-6"><div class="card"><div class="card-header">Withdrawal Requests</div><div class="table-responsive">
+  <table class="table table-dark table-hover align-middle mb-0" id="table-dw"><thead><tr><th>Time</th><th>User</th><th>Amount</th><th>Method</th><th>Status</th></tr></thead><tbody></tbody></table></div></div></div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const S = window.DemoSeed;
+function kpis(){
+  const ggr = S.services.reduce((s,g)=>s+g.ngr,0);
+  const ngr = Math.round(ggr*0.78);
+  const ap  = S.players.length + Math.floor(Math.random()*50);
+  const arppu = Math.round(ggr/Math.max(1,ap));
+  const sr  = Math.round((S.payments.filter(p=>p.status==='Succeeded').length / S.payments.length)*100);
+  document.getElementById('kpi-ggr').textContent = short(ggr, Demo.currency);
+  document.getElementById('kpi-ngr').textContent = short(ngr, Demo.currency);
+  document.getElementById('kpi-ap').textContent = ap.toLocaleString();
+  document.getElementById('kpi-arppu').textContent = money(arppu, Demo.currency);
+  document.getElementById('kpi-sr').textContent = sr + '%';
+
+  const canvas = document.getElementById('chart-sr'), ctx = canvas.getContext('2d'), w = canvas.width = canvas.clientWidth, h = canvas.height;
+  const pts=36; ctx.clearRect(0,0,w,h); ctx.strokeStyle='#a78bfa'; ctx.beginPath();
+  for(let i=0;i<pts;i++){ const x=i/(pts-1)*w; const v=0.5+0.5*Math.sin(i/4)+Math.random()*0.2; const y=h-v*h; if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);} ctx.stroke();
+}
+let trendData = Array.from({length:48}, ()=>50+Math.random()*40);
+async function tick(){ try { const r = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT'); const j=await r.json(); const price = parseFloat(j.price); const base=30000; const ratio = Math.min(2, Math.max(0.5, price/base)); trendData.push(60*ratio + Math.random()*15); } catch(e){ const last=trendData[trendData.length-1]||60; trendData.push(Math.max(20,Math.min(100,last+(Math.random()-0.5)*6))); } if(trendData.length>48) trendData.shift(); }
+setInterval(tick, 4000);
+function drawTrend(){ const c=document.getElementById('trend'), ctx=c.getContext('2d'), w=c.width=c.clientWidth, h=c.height; (function anim(){ ctx.clearRect(0,0,w,h); const n=trendData.length; for(let i=0;i<n;i++){ const v=trendData[i]; const bw=w/n*0.7, x=i*(w/n)+(w/n-bw)/2, bh=(v/100)*(h-24); ctx.fillStyle='#0dcaf0'; ctx.fillRect(x,h-bh-12,bw,bh);} requestAnimationFrame(anim); })(); }
+function donut(){ const canvas=document.getElementById('donut'), ctx=canvas.getContext('2d'); const w=canvas.width, h=canvas.height, r=Math.min(w,h)/2-6, cx=w/2, cy=h/2; const parts=[12,6,5,3]; let start=-Math.PI/2; const total=parts.reduce((a,b)=>a+b,0); const colors=['#0dcaf0','#6f42c1','#198754','#ffc107']; parts.forEach((v,i)=>{ const ang=v/total*2*Math.PI; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.fillStyle=colors[i%colors.length]; ctx.arc(cx,cy,r,start,start+ang); ctx.closePath(); ctx.fill(); start+=ang; }); ctx.globalCompositeOperation='destination-out'; ctx.beginPath(); ctx.arc(cx,cy,r*0.6,0,Math.PI*2); ctx.fill(); ctx.globalCompositeOperation='source-over'; }
+function activity(){ const box=document.getElementById('activity'); ['Deposit ₱1,200 via GCash (Aira)','Withdrawal request ₱70k (Aira)','Card 3DS succeeded (Santos)','Bank transfer queued ₱300k','Purchased Streaming Coins ₱2,000 (R. Go)'].forEach(t=>{ const d=document.createElement('div'); d.className='list-group-item bg-transparent text-light border-secondary d-flex justify-content-between'; d.innerHTML=`<span>${t}</span><span class="badge text-bg-secondary">now</span>`; box.prepend(d);}); }
+function withdrawals(){ const tb=document.querySelector('#table-dw tbody'); tb.innerHTML=''; S.withdrawals.slice(0,8).forEach(w=>{ const badge=w.status==='Pending'?'warning':(w.status==='On Hold'?'danger':'success'); const tr=document.createElement('tr'); tr.innerHTML=`<td>${w.ts}</td><td>${w.player}</td><td>${money(w.amount, Demo.currency)}</td><td>${w.dest}</td><td><span class="badge text-bg-${badge}">${w.status}</span></td>`; tb.appendChild(tr); }); }
+function render(){ kpis(); drawTrend(); donut(); activity(); withdrawals(); }
+render(); window.onCurrencyChange = render;
+</script>
+</body></html>

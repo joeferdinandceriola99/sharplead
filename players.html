@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sharplead — Players</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="assets/data.js"></script>
+  <script src="assets/common.js"></script>
+</head>
+<body>
+<script>renderHeader('players')</script>
+<div class="container-fluid py-3">
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span>Players</span>
+    <input id="pFilter" class="form-control form-control-sm" placeholder="Search user…">
+  </div>
+  <div class="table-responsive">
+    <table class="table table-dark table-hover align-middle mb-0" id="table-players">
+      <thead><tr><th>ID</th><th>Name</th><th>Wallet</th><th>Last Activity</th><th>PM</th><th>Risk</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <div class="card-footer d-flex justify-content-end gap-2">
+    <button id="prevPage" class="btn btn-outline-secondary btn-sm">Prev</button>
+    <span id="pageInfo" class="text-secondary small">Page 1</span>
+    <button id="nextPage" class="btn btn-outline-secondary btn-sm">Next</button>
+  </div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const S = window.DemoSeed;
+let page=1, pageSize=10;
+function render(){
+  const q=(document.getElementById('pFilter').value||'').toLowerCase();
+  const src=S.players.filter(p=>(p.id+p.name+p.pm).toLowerCase().includes(q));
+  const pages=Math.max(1, Math.ceil(src.length/pageSize));
+  if(page>pages) page=pages;
+  const view=src.slice((page-1)*pageSize, page*pageSize);
+  const tb=document.querySelector('#table-players tbody'); tb.innerHTML='';
+  view.forEach(p=>{ const tr=document.createElement('tr'); const risk=p.risk==='High'?'danger':p.risk==='Med'?'warning':'success'; tr.innerHTML=`<td>${p.id}</td><td>${p.name}</td><td>${money(p.wallet, Demo.currency)}</td><td>${p.last}</td><td>${p.pm}</td><td><span class="badge text-bg-${risk}">${p.risk}</span></td>`; tb.appendChild(tr); });
+  document.getElementById('pageInfo').textContent=`Page ${page} / ${pages}`;
+  document.getElementById('prevPage').disabled = page<=1;
+  document.getElementById('nextPage').disabled = page>=pages;
+}
+document.addEventListener('click',e=>{ if(e.target.id==='prevPage'){page=Math.max(1,page-1);render();} if(e.target.id==='nextPage'){page++;render();} });
+document.getElementById('pFilter').addEventListener('input',()=>{page=1;render();});
+render(); window.onCurrencyChange = render;
+</script>
+</body></html>

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sharplead — Banking</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="assets/data.js"></script>
+  <script src="assets/common.js"></script>
+</head>
+<body>
+<script>renderHeader('banking')</script>
+<div class="container-fluid py-3">
+<div class="row g-3">
+  <div class="col-12 col-lg-7">
+    <div class="card"><div class="card-header">Bank Buckets</div>
+      <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0" id="banks">
+          <thead><tr><th>Bank</th><th>Currency</th><th>Balance</th><th>Today In</th><th>Today Out</th></tr></thead><tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-lg-5">
+    <div class="card"><div class="card-header">Transfer Funds</div><div class="card-body">
+      <div class="row g-2">
+        <div class="col-12 col-md-6"><select id="fromBank" class="form-select"></select></div>
+        <div class="col-12 col-md-6"><select id="toBank" class="form-select"></select></div>
+        <div class="col-12 col-md-7"><input id="amt" class="form-control" placeholder="Amount"></div>
+        <div class="col-12 col-md-5 d-grid"><button id="go" class="btn btn-warning fw-bold">Transfer</button></div>
+      </div>
+      <div class="text-secondary small mt-2">Local ↔ International with FX conversion (PHP↔USD).</div>
+    </div></div>
+  </div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const S = window.DemoSeed;
+function render(){
+  const tb=document.querySelector('#banks tbody'); tb.innerHTML='';
+  S.banks.forEach(b=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${b.name}</td><td>${b.currency}</td><td>${money(b.balance,b.currency)}</td><td>${money(b.in,b.currency)}</td><td>${money(b.out,b.currency)}</td>`; tb.appendChild(tr); });
+  const from=document.getElementById('fromBank'), to=document.getElementById('toBank'); from.innerHTML=''; to.innerHTML='';
+  S.banks.forEach((b,i)=>{ const o1=document.createElement('option');o1.value=i;o1.textContent=`${b.name} (${b.currency})`;from.appendChild(o1); const o2=document.createElement('option');o2.value=i;o2.textContent=`${b.name} (${b.currency})`;to.appendChild(o2); });
+  if(to.options.length>1) to.selectedIndex=1;
+}
+document.addEventListener('click',e=>{
+  if(e.target.id==='go'){ const i=+document.getElementById('fromBank').value, j=+document.getElementById('toBank').value, amt = Number((document.getElementById('amt').value||'').replace(/[^\d.]/g,'')); if(i===j) return toast('Pick two different banks'); if(!amt) return toast('Enter amount'); const A=S.banks[i], B=S.banks[j]; if(A.balance<amt) return toast('Insufficient'); const rateA=(A.currency==='USD')?1:58, rateB=(B.currency==='USD')?1:58; const usd=(A.currency==='USD')?amt:amt/rateA; const amtIn=(B.currency==='USD')?usd:usd*rateB; A.balance-=amt; A.out+=amt; B.balance+=Math.round(amtIn); B.in+=Math.round(amtIn); render(); toast('Transfer complete'); } });
+render(); window.onCurrencyChange = render;
+</script>
+</body></html>

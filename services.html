@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sharplead — Services</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <script src="assets/data.js"></script>
+  <script src="assets/common.js"></script>
+</head>
+<body>
+<script>renderHeader('services')</script>
+<div class="container-fluid py-3">
+<div class="row g-3">
+  <div class="col-12 col-lg-6">
+    <div class="card"><div class="card-header">Top Services</div>
+      <div class="table-responsive">
+        <table class="table table-dark table-hover align-middle mb-0" id="table">
+          <thead><tr><th>Service</th><th>Orders</th><th>Sales</th><th>NGR</th></tr></thead><tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card"><div class="card-header">Orders (last 24h)</div>
+      <div class="card-body"><canvas id="bars" height="220"></canvas></div>
+    </div>
+  </div>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const S = window.DemoSeed;
+function render(){
+  const tb=document.querySelector('#table tbody'); tb.innerHTML='';
+  S.services.forEach(s=>{ const tr=document.createElement('tr'); tr.innerHTML=`<td>${s.name}</td><td>${s.orders.toLocaleString()}</td><td>${money(s.sales, Demo.currency)}</td><td>${money(s.ngr, Demo.currency)}</td>`; tb.appendChild(tr); });
+  const canvas=document.getElementById('bars'), ctx=canvas.getContext('2d'); const w=canvas.width=canvas.clientWidth, h=canvas.height; const values=S.services.map(s=>s.orders), max=Math.max(...values)*1.15, n=values.length, bw=w/n*0.7; ctx.clearRect(0,0,w,h);
+  values.forEach((v,i)=>{ const x=i*(w/n)+(w/n-bw)/2; const bh=(v/max)*(h-20); let t=0;(function(xx,bb){ function anim(){ t+=0.06; const eh=bb*Math.min(1,t); ctx.fillStyle='#0dcaf0'; ctx.fillRect(xx,h-eh-10,bw,eh); if(t<1) requestAnimationFrame(anim);} anim();})(x,bh); });
+}
+render(); window.onCurrencyChange = render;
+</script>
+</body></html>

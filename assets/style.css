@@ -1,0 +1,12 @@
+
+:root{--muted:#b9c6e8}
+*{scrollbar-width:thin;scrollbar-color:#2b3a5c transparent}
+*::-webkit-scrollbar{width:8px;height:8px}
+*::-webkit-scrollbar-thumb{background:#2b3a5c;border-radius:8px}
+*::-webkit-scrollbar-track{background:transparent}
+.nav-link.active{background:linear-gradient(135deg,#6a5acd,#1aa9e8)!important;color:#fff!important;border-radius:8px}
+.table td,.table th{vertical-align:middle}
+.legend-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+body{background:#0b1020;color:#e6edff}
+.card{background:#0f1630;border-color:#1b2645}
+.form-control,.form-select{background:#0b1225;border-color:#223055;color:#dbe5ff}
