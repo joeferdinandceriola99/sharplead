@@ -13,7 +13,7 @@ function renderHeader(active){
   const nav = `
   <nav class="navbar navbar-expand-lg sticky-top bg-dark border-bottom">
     <div class="container-fluid">
-      <a class="navbar-brand fw-bold" href="index.html">Sharplead Dashboard</a>
+      <a class="navbar-brand fw-bold" href="index.html">Casino Dashboard</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
       <div id="nav" class="collapse navbar-collapse">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
